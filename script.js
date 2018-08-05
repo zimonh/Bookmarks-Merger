@@ -1,4 +1,7 @@
-const bookmark_html_to_object = browser => {
+/* by: ZIMONH src: https://github.com/zimonh/Bookmarks-Merger
+   License: https://creativecommons.org/licenses/by-nc-sa/4.0/ */
+
+	const bookmark_html_to_object = browser => {
 
 	let chrome_or_firefox = 'DL > DT > DL > DT', //temp query
 		Header = ''; //temp header
