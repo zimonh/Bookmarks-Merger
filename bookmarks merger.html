@@ -1,6 +1,5 @@
 <!DOctyPE html>
 <html lang="en">
-
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -8,228 +7,22 @@
 	<meta name="description" content="">
 	<meta name="keywords" content="">
 	<title>Bookmark merger by ZIMONH</title>
+
+	<link rel="stylesheet" href="style.css">
+	<script type="application/javascript" src="script.js"></script>
 </head>
-
 <body>
-	<style>
-	body {
-		font-family: Consolas;
-		background-color: black;
-		color: #fff;
-		font-size: 22px;
-	}
-	button{background-color: #2196F3;
-box-shadow: gray 0 5px;
-display: inline-block;
-position: relative;
-top: 0;
--webkit-transition: all 0.05s ease-in-out;
--moz-transition: all 0.05s ease-in-out;
--o-transition: all 0.05s ease-in-out;
-transition: all 0.05s ease-in-out;border: none;
-border-radius: 5px;
-color: white;
-cursor: pointer;
-font-size: 28px;
-height: 49px;
-padding: 2px 10px 6px 10px;
-pointer-events: auto;}
-button:active{box-shadow: gray 0 1px;
-top: 4px;}
-	div {
-		display: none;
-	}
-
-	.merge {
-		display: inline-block;
-	}
-
-	textarea {
-		background-color: #1a1a1a;
-		color: white;
-		border: none;
-		padding: 20px;
-		border-top-left-radius: 12px;
-		border-bottom-left-radius: 12px;
-		width: calc(100% - 30px);
-		border: 0;
-		padding: 15px;
-		margin: 0;
-
-		resize: none;
-	}
-
-	table {
-
-		width: 100%;
-	}
-
-	</style>
-	<div class="chrome"></div>
-	<div class="firefox"></div>
-	<table>
-		<tbody>
-			<tr style="height: 30px;">
-				<td>Chrome</td>
-			</tr>
-			<tr>
-				<td >
-					<textarea style="height: 70px;" class="chrome"></textarea>
-				</td>
-			</tr>
-			<tr style="height: 30px;">
-				<td>Firefox</td>
-			</tr>
-			<tr>
-				<td>
-					<textarea style="height: 70px;" class="firefox"></textarea>
-				</td>
-			</tr>
-			<tr style="height: 70px; text-align: center;">
-				<td>
-					<button onclick="merge();">Merge</button>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<textarea style="height: calc(100vh - 400px);" class="merge"></textarea>
-				</td>
-			</tr>
-		</tbody>
-	</table>
-<script>
-const bookmark_html_to_object = browser => {
-
-	//get data from the text area and store it in a temp div in the browser to make sure all tags are closed.
-	const holder = document.querySelector('div.' + browser);
-	holder.innerHTML = document.querySelector('textarea.' + browser).value;
-
-
-
-	let chrome_or_firefox = 'DL > DT > DL > DT';
-	if (browser === 'firefox') chrome_or_firefox = 'DL > DT';
-	const holder_elements = holder.querySelectorAll(chrome_or_firefox);
-	const obj = {};
-
-	let Header = '';
-
-	for (let element of holder_elements) {
-		const H3 = element.querySelector('H3');
-		if (H3 !== null) {
-			if (H3.innerHTML !== 'From Google Chrome') {
-				Header = H3.innerHTML;
-				obj[Header] = [];
-			}
-		} else {
-			const A = element.querySelector('A');
-			obj[Header].push({
-				Header,
-				href: A.getAttribute('HREF').replace(/www./, ''),
-				text: A.innerHTML,
-				add_date: A.getAttribute('ADD_DATE')
-			});
-		}
-	}
-	return obj;
-};
-
-const removeDuplicates = (myArr, prop) => {
-	return myArr.filter((obj, pos, arr) => {
-		return arr.map(mapObj => mapObj[prop]).indexOf(obj[prop]) === pos;
-	});
-};
-
-const merge = () => {
-	console.log('start');
-	const test = bookmark_html_to_object('chrome');
-	const test2 = bookmark_html_to_object('firefox');
-
-
-	for (let key in test2) {
-		if (test[key] === undefined) test[key] = [];
-	}
-
-
-	for (let key in test) {
-		if (test2[key] !== undefined) {
-			test[key].push(...test2[key]);
-		}
-
-
-	}
-
-	for (let key in test) {
-		test[key] = test[key].sort(function(a, b) {
-			const nameA = a.href.toUpperCase(); // ignore upper and lowercase
-			const nameB = b.href.toUpperCase(); // ignore upper and lowercase
-			if (nameA < nameB) return -1;
-			if (nameA > nameB) return 1;
-			return 0;
-		});
-	}
-	for (let key in test) test[key] = removeDuplicates(test[key], 'href');
-	console.log(test);
-	document.querySelector('.merge').innerHTML = makeNew(test);
-
-};
-
-
-
-
-
-const bookmarks = (add_date, href, text) => `<DT><A ADD_DATE="${add_date}" HREF="${href}">${text}</A>
-`;
-
-const headers = (input, title) => `
-<DT><H3>${title}</H3>
-<DL><p>
-${input}
-</DL><p>`;
-
-
-
-
-const makeNew = (all) => {
-	const tipit = {};
-
-	//let spreadsheet = '';
-	for (let key in all) {
-		if (!all.hasOwnProperty(key)) continue;
-		const obj = all[key];
-		tipit[key] = '';
-		for (let prop in obj) {
-			if (!obj.hasOwnProperty(prop)) continue;
-			//spreadsheet += `${obj[prop].header},${obj[prop].add_date},${obj[prop].href},${obj[prop].text}`;
-			tipit[obj[prop].Header] += bookmarks(obj[prop].add_date, obj[prop].href, obj[prop].text);
-		}
-	}
-
-
-	//console.log(spreadsheet);
-
-
-	let alll = '';
-
-	for (let key in tipit) {
-		//if(!all.hasOwnProperty(key)) continue;
-		alll += headers(tipit[key], key);
-	}
-
-
-
-
-
-	return `<!DOCTYPE NETSCAPE-Bookmark-file-1>
-<!-- This is an automatically generated file.
- It will be read and overwritten.
- DO NOT EDIT! -->
-<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">
-<TITLE>Bookmarks</TITLE>
-<H1>Bookmarks Menu</H1>
-
-<DL><p>` + alll + '</DL>';
-};
-</script>
+<div class="chrome"></div>
+<div class="firefox"></div>
+<table>
+	<tbody>
+		<tr style="height: 30px;"><td>Chrome</td></tr>
+		<tr><td><textarea style="height: 70px;" class="chrome"></textarea></td></tr>
+		<tr style="height: 30px;"><td>Firefox</td></tr>
+		<tr><td><textarea style="height: 70px;" class="firefox"></textarea></td></tr>
+		<tr style="height: 70px; text-align: center;"><td><button onclick="merge();">Merge</button></td></tr>
+		<tr><td><textarea style="height: calc(100vh - 400px);" class="merge"></textarea></td></tr>
+	</tbody>
+</table>
 </body>
-
 </html>

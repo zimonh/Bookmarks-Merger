@@ -1,0 +1,59 @@
+body {
+	font-family: Consolas;
+	background-color: black;
+	color: #fff;
+	font-size: 22px;
+}
+
+button {
+	background-color: #2196F3;
+	box-shadow: gray 0 5px;
+	display: inline-block;
+	position: relative;
+	top: 0;
+	-webkit-transition: all 0.05s ease-in-out;
+	-moz-transition: all 0.05s ease-in-out;
+	-o-transition: all 0.05s ease-in-out;
+	transition: all 0.05s ease-in-out;
+	border: none;
+	border-radius: 5px;
+	color: white;
+	cursor: pointer;
+	font-size: 28px;
+	height: 49px;
+	padding: 2px 10px 6px 10px;
+	pointer-events: auto;
+}
+
+button:active {
+	box-shadow: gray 0 1px;
+	top: 4px;
+}
+
+div {
+	display: none;
+}
+
+.merge {
+	display: inline-block;
+}
+
+textarea {
+	background-color: #1a1a1a;
+	color: white;
+	border: none;
+	padding: 20px;
+	border-top-left-radius: 12px;
+	border-bottom-left-radius: 12px;
+	width: calc(100% - 30px);
+	border: 0;
+	padding: 15px;
+	margin: 0;
+
+	resize: none;
+}
+
+table {
+
+	width: 100%;
+}
